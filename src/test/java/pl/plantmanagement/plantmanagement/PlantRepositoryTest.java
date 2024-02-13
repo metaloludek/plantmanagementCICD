@@ -48,20 +48,20 @@ public class PlantRepositoryTest {
 
     @Test
     public void testUpdate() {
-        // Arrange (Przygotowanie): Dodaj roślinę do bazy danych
+   
         Plant originalPlant = new Plant(1, "Polish1", "Latin1", 1, "Blooming1");
         plantRepository.save(List.of(originalPlant));
 
-        // Nowe dane rośliny
+     
         Plant updatedPlantData = new Plant(1, "UpdatedPolish", "UpdatedLatin", 2, "UpdatedBlooming");
 
-        // Act (Akcja): Aktualizuj roślinę w bazie danych
+    
         plantRepository.update(updatedPlantData);
 
-        // Pobierz zaktualizowaną roślinę
+ 
         Plant retrievedPlant = plantRepository.getById(1);
 
-        // Assert (Asercja): Sprawdź, czy roślina została poprawnie zaktualizowana
+    
         assertEquals("UpdatedPolish", retrievedPlant.getPolish_name());
         assertEquals("UpdatedLatin", retrievedPlant.getLatin_name());
         assertEquals(2, retrievedPlant.getWatering());
