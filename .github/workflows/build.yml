@@ -26,6 +26,6 @@ jobs:
 
     - name: Build project with Maven
       run: |
-        cd plantmanagement
+        cd plantmanagementCICD
         mvn -B clean package
     
