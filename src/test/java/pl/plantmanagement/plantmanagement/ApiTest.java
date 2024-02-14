@@ -28,6 +28,15 @@ public class ApiTest {
     private MockMvc mockMvc;
 
     @Test
+    public void testAddPlant() throws Exception {
+        Plant newPlant = new Plant(0, "Rose", "Rosa", 3, "Yes"); // Change with valid plant data
+        mockMvc.perform(post("/plants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(newPlant)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
     public void testGetPlants() throws Exception {
         mockMvc.perform(get("/plants"))
                 .andExpect(status().isOk())
@@ -42,14 +51,7 @@ public class ApiTest {
                 .andExpect(jsonPath("$.id").value(id));
     }
 
-    @Test
-    public void testAddPlant() throws Exception {
-        Plant newPlant = new Plant(2, "Rose", "Rosa", 3, "Yes"); // Change with valid plant data
-        mockMvc.perform(post("/plants")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(newPlant)))
-                .andExpect(status().isCreated());
-    }
+
 
     @Test
     public void testUpdatePlant() throws Exception {
