@@ -94,8 +94,8 @@ class Api {
 
     public Api() {
         this.plants = new ArrayList<>();
-        plants.add(new Plant(0L, "Róża", "Rosa", 3, "Yes"));
-        plants.add(new Plant(1L, "Tulipan", "Tulip", 2, "Yes"));
+        plants.add(new Plant(0, "Róża", "Rosa", 3, "Yes"));
+        plants.add(new Plant(1, "Tulipan", "Tulip", 2, "Yes"));
     }
 
     @GetMapping("/plants")
@@ -106,20 +106,21 @@ class Api {
 
     @GetMapping("/plants/{id}")
     @Order(2)
-    public ResponseEntity<Plant> getPlantById(@PathVariable Long id) {
+    public ResponseEntity<Plant> getPlantById(@PathVariable int id) {
         Optional<Plant> optionalPlant = plants.stream()
-                .filter(plant -> plant.getId().equals(id))
+                .filter(plant -> plant.getId() == id)
                 .findFirst();
-
+    
         return optionalPlant.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    
 
     @PostMapping("/plants")
     @Order(3)
     public ResponseEntity<Void> addPlant(@RequestBody Plant newPlant) {
         // Automatycznie generuj nowe ID
-        Long newId = generateNewId();
+        int newId = generateNewId();
         newPlant.setId(newId);
 
         plants.add(newPlant);
@@ -129,27 +130,29 @@ class Api {
     }
 
     // Funkcja do generowania nowego ID
-    private Long generateNewId() {
+    private int generateNewId() {
         return plants.stream()
                 .map(Plant::getId)
-                .max(Long::compareTo)
-                .orElse(0L) + 1;
+                .max(Integer::compareTo)
+                .orElse(0) + 1;
     }
 
     @PutMapping("/plants/{id}")
-    public ResponseEntity<Void> updatePlant(@PathVariable Long id, @RequestBody Plant updatedPlant) {
+    public ResponseEntity<Void> updatePlant(@PathVariable Integer id, @RequestBody Plant updatedPlant) {
         for (int i = 0; i < plants.size(); i++) {
-            if (plants.get(i).getId().equals(id)) {
+            if (plants.get(i).getId() == id) {
                 plants.set(i, updatedPlant);
                 return ResponseEntity.noContent().build();
             }
         }
         return ResponseEntity.notFound().build();
     }
+    
 
     @DeleteMapping("/plants/{id}")
-    public ResponseEntity<Void> deletePlant(@PathVariable Long id) {
-        plants.removeIf(plant -> plant.getId().equals(id));
+    public ResponseEntity<Void> deletePlant(@PathVariable int id) {
+        plants.removeIf(plant -> plant.getId() == id);
         return ResponseEntity.noContent().build();
     }
+    
 }
