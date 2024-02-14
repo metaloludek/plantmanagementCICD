@@ -71,3 +71,84 @@
 
 
 // }
+package pl.plantmanagement.plantmanagement;
+
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class Api {
+
+    private List<Plant> plants;
+
+    @Autowired
+    private PlantRepository plantRepository;
+
+    public Api() {
+        this.plants = new ArrayList<>();
+        plants.add(new Plant(0L, "Róża", "Rosa", 3, "Yes"));
+        plants.add(new Plant(1L, "Tulipan", "Tulip", 2, "Yes"));
+    }
+
+    @GetMapping("/plants")
+    @Order(1)
+    public List<Plant> getPlants() {
+        return plants;
+    }
+
+    @GetMapping("/plants/{id}")
+    @Order(2)
+    public ResponseEntity<Plant> getPlantById(@PathVariable Long id) {
+        Optional<Plant> optionalPlant = plants.stream()
+                .filter(plant -> plant.getId().equals(id))
+                .findFirst();
+
+        return optionalPlant.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/plants")
+    @Order(3)
+    public ResponseEntity<Void> addPlant(@RequestBody Plant newPlant) {
+        // Automatycznie generuj nowe ID
+        Long newId = generateNewId();
+        newPlant.setId(newId);
+
+        plants.add(newPlant);
+
+        // Zwróć odpowiedź z nowym ID
+        return ResponseEntity.ok().header("Location", "/plants/" + newId).build();
+    }
+
+    // Funkcja do generowania nowego ID
+    private Long generateNewId() {
+        return plants.stream()
+                .map(Plant::getId)
+                .max(Long::compareTo)
+                .orElse(0L) + 1;
+    }
+
+    @PutMapping("/plants/{id}")
+    public ResponseEntity<Void> updatePlant(@PathVariable Long id, @RequestBody Plant updatedPlant) {
+        for (int i = 0; i < plants.size(); i++) {
+            if (plants.get(i).getId().equals(id)) {
+                plants.set(i, updatedPlant);
+                return ResponseEntity.noContent().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/plants/{id}")
+    public ResponseEntity<Void> deletePlant(@PathVariable Long id) {
+        plants.removeIf(plant -> plant.getId().equals(id));
+        return ResponseEntity.noContent().build();
+    }
+}
