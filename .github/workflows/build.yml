@@ -30,6 +30,9 @@ jobs:
         mvn -Dzap.host=172.17.0.1 -Dzap.port=9090 verify
 
     - name: Build project with Maven
-      run: |
+      run: 
         mvn -B clean package
+
+    - name: Run tests
+      run: mvn -f src/test/java/pl/plantmanagement/plantmanagement/ test
     
