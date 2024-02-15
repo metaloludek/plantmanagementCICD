@@ -97,7 +97,7 @@ class crudTests {
 
     @BeforeEach
     public void setUp() throws Exception {
-        connection = DriverManager.getConnection("jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1", "sa", "");
+        connection = DriverManager.getConnection("jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1", "sa", "password");
         try (Statement stmt = connection.createStatement()) {
             stmt.execute("CREATE TABLE IF NOT EXISTS plants (" +
                     "id INT PRIMARY KEY," +
