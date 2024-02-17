@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +14,12 @@
       flex-direction: column;
       align-items: center;
     }
+
     .form-container {
       width: 100%;
       max-width: 600px;
     }
+
     .list-container {
       width: 100%;
       max-width: 1200px;
@@ -25,6 +28,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="container mt-4">
@@ -47,7 +51,9 @@
       </div>
       <div class="form-group">
         <label for="watering">Watering:</label>
-        <input type="number" class="form-control" id="watering" name="watering" required>
+        <input type="number" class="form-control" id="watering" name="watering" oninput="validateWatering()"
+               required>
+        <small id="wateringError" class="form-text text-danger"></small>
       </div>
       <div class="form-group">
         <label for="blooming">Blooming:</label>
@@ -107,29 +113,52 @@
 <script>
   // Funkcja dodająca roślinę
   function addPlant() {
-    var plant = {
-      polish_name: document.getElementById('polishName').value,
-      latin_name: document.getElementById('latinName').value,
-      watering: parseInt(document.getElementById('watering').value),
-      blooming: document.getElementById('blooming').value
-    };
+    var wateringInput = document.getElementById('watering');
 
-    // Wywołaj API POST /plants, aby dodać roślinę
-    fetch('/plants', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify([plant])  // Przesyłaj roślinę w formie listy
-    })
-            .then(response => {
-              // Jeśli dodanie było udane, wyczyść formularz i odśwież listę roślin
-              if (response.ok) {
-                clearForm();
-                getPlants();
-              }
-            })
-            .catch(error => console.error('Error:', error));
+    // Sprawdź poprawność pola 'watering' przed dodaniem rośliny
+    if (wateringInput.checkValidity()) {
+      var plant = {
+        polish_name: document.getElementById('polishName').value,
+        latin_name: document.getElementById('latinName').value,
+        watering: parseInt(wateringInput.value),
+        blooming: document.getElementById('blooming').value
+      };
+
+      // Wywołaj API POST /plants, aby dodać roślinę
+      fetch('/plants', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([plant])  // Przesyłaj roślinę w formie listy
+      })
+              .then(response => {
+                // Jeśli dodanie było udane, wyczyść formularz i odśwież listę roślin
+                if (response.ok) {
+                  clearForm();
+                  getPlants();
+                }
+              })
+              .catch(error => console.error('Error:', error));
+    } else {
+      // Obsługa błędu walidacji
+      console.log('Invalid input in watering field.');
+    }
+  }
+
+  // Funkcja walidująca pole 'watering'
+  function validateWatering() {
+    var wateringInput = document.getElementById('watering');
+    var wateringError = document.getElementById('wateringError');
+
+    // Sprawdź, czy wartość jest liczbą całkowitą
+    if (!Number.isInteger(parseFloat(wateringInput.value))) {
+      wateringError.textContent = 'Please enter a valid integer for watering.';
+      wateringInput.setCustomValidity('Invalid input');
+    } else {
+      wateringError.textContent = '';
+      wateringInput.setCustomValidity('');
+    }
   }
 
   // Funkcja do wyczyszczenia formularza
