@@ -1,1 +1,0 @@
-# plantmanagement---CICD
